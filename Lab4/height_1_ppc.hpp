@@ -10,9 +10,9 @@ using namespace stan::math;
 stan::math::profile_map profiles__;
 static constexpr std::array<const char*, 4> locations_array__ = 
 {" (found before start of program)",
- " (in '/home/lab4/height_1_ppc.stan', line 2, column 2 to column 32)",
- " (in '/home/lab4/height_1_ppc.stan', line 3, column 2 to column 41)",
- " (in '/home/lab4/height_1_ppc.stan', line 4, column 2 to column 47)"};
+ " (in '/home/Lab4/height_1_ppc.stan', line 2, column 2 to column 31)",
+ " (in '/home/Lab4/height_1_ppc.stan', line 3, column 2 to column 40)",
+ " (in '/home/Lab4/height_1_ppc.stan', line 4, column 2 to column 42)"};
 
 
 
@@ -116,13 +116,13 @@ class height_1_ppc_model final : public model_base_crtp<height_1_ppc_model> {
       } 
       double mi = std::numeric_limits<double>::quiet_NaN();
       current_statement__ = 1;
-      mi = stan::math::normal_rng(160, 10, base_rng__);
+      mi = stan::math::normal_rng(155, 5, base_rng__);
       double sigma = std::numeric_limits<double>::quiet_NaN();
       current_statement__ = 2;
-      sigma = stan::math::gamma_rng(2, 30, base_rng__);
+      sigma = stan::math::gamma_rng(5, 1, base_rng__);
       double height_sim = std::numeric_limits<double>::quiet_NaN();
       current_statement__ = 3;
-      height_sim = stan::math::normal_rng(mi, (sigma + 15), base_rng__);
+      height_sim = stan::math::normal_rng(mi, sigma, base_rng__);
       current_statement__ = 2;
       stan::math::check_greater_or_equal(function__, "sigma", sigma, 0);
       out__.write(mi);

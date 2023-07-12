@@ -8,8 +8,32 @@ using namespace stan::math;
 
 
 stan::math::profile_map profiles__;
-static constexpr std::array<const char*, 1> locations_array__ = 
-{" (found before start of program)"};
+static constexpr std::array<const char*, 25> locations_array__ = 
+{" (found before start of program)",
+ " (in '/home/Lab4/height_2_fit.stan', line 8, column 3 to column 14)",
+ " (in '/home/Lab4/height_2_fit.stan', line 9, column 3 to column 23)",
+ " (in '/home/Lab4/height_2_fit.stan', line 10, column 3 to column 13)",
+ " (in '/home/Lab4/height_2_fit.stan', line 14, column 3 to column 14)",
+ " (in '/home/Lab4/height_2_fit.stan', line 16, column 8 to column 39)",
+ " (in '/home/Lab4/height_2_fit.stan', line 15, column 18 to line 17, column 5)",
+ " (in '/home/Lab4/height_2_fit.stan', line 15, column 4 to line 17, column 5)",
+ " (in '/home/Lab4/height_2_fit.stan', line 31, column 3 to column 13)",
+ " (in '/home/Lab4/height_2_fit.stan', line 33, column 8 to column 40)",
+ " (in '/home/Lab4/height_2_fit.stan', line 32, column 19 to line 34, column 5)",
+ " (in '/home/Lab4/height_2_fit.stan', line 32, column 4 to line 34, column 5)",
+ " (in '/home/Lab4/height_2_fit.stan', line 21, column 3 to column 26)",
+ " (in '/home/Lab4/height_2_fit.stan', line 22, column 3 to column 22)",
+ " (in '/home/Lab4/height_2_fit.stan', line 23, column 3 to column 25)",
+ " (in '/home/Lab4/height_2_fit.stan', line 26, column 6 to column 40)",
+ " (in '/home/Lab4/height_2_fit.stan', line 25, column 18 to line 27, column 5)",
+ " (in '/home/Lab4/height_2_fit.stan', line 25, column 3 to line 27, column 5)",
+ " (in '/home/Lab4/height_2_fit.stan', line 2, column 4 to column 19)",
+ " (in '/home/Lab4/height_2_fit.stan', line 3, column 26 to column 27)",
+ " (in '/home/Lab4/height_2_fit.stan', line 3, column 4 to column 29)",
+ " (in '/home/Lab4/height_2_fit.stan', line 4, column 16 to column 17)",
+ " (in '/home/Lab4/height_2_fit.stan', line 4, column 4 to column 19)",
+ " (in '/home/Lab4/height_2_fit.stan', line 14, column 11 to column 12)",
+ " (in '/home/Lab4/height_2_fit.stan', line 31, column 10 to column 11)"};
 
 
 
@@ -17,7 +41,9 @@ static constexpr std::array<const char*, 1> locations_array__ =
 class height_2_fit_model final : public model_base_crtp<height_2_fit_model> {
 
  private:
-   
+  int N;
+  std::vector<double> heights;
+  std::vector<double> weight; 
   
  
  public:
@@ -45,10 +71,48 @@ class height_2_fit_model final : public model_base_crtp<height_2_fit_model> {
     try {
       int pos__ = std::numeric_limits<int>::min();
       pos__ = 1;
+      current_statement__ = 18;
+      context__.validate_dims("data initialization","N","int",
+           std::vector<size_t>{});
+      N = std::numeric_limits<int>::min();
+      
+      
+      current_statement__ = 18;
+      N = context__.vals_i("N")[(1 - 1)];
+      current_statement__ = 18;
+      stan::math::check_greater_or_equal(function__, "N", N, 0);
+      current_statement__ = 19;
+      stan::math::validate_non_negative_index("heights", "N", N);
+      current_statement__ = 20;
+      context__.validate_dims("data initialization","heights","double",
+           std::vector<size_t>{static_cast<size_t>(N)});
+      heights = 
+        std::vector<double>(N, std::numeric_limits<double>::quiet_NaN());
+      
+      
+      current_statement__ = 20;
+      heights = context__.vals_r("heights");
+      current_statement__ = 20;
+      stan::math::check_greater_or_equal(function__, "heights", heights, 0);
+      current_statement__ = 21;
+      stan::math::validate_non_negative_index("weight", "N", N);
+      current_statement__ = 22;
+      context__.validate_dims("data initialization","weight","double",
+           std::vector<size_t>{static_cast<size_t>(N)});
+      weight = 
+        std::vector<double>(N, std::numeric_limits<double>::quiet_NaN());
+      
+      
+      current_statement__ = 22;
+      weight = context__.vals_r("weight");
+      current_statement__ = 23;
+      stan::math::validate_non_negative_index("mu", "N", N);
+      current_statement__ = 24;
+      stan::math::validate_non_negative_index("h", "N", N);
     } catch (const std::exception& e) {
       stan::lang::rethrow_located(e, locations_array__[current_statement__]);
     }
-    num_params_r__ = 0U;
+    num_params_r__ = 1 + 1 + 1;
     
   }
   
@@ -70,7 +134,44 @@ class height_2_fit_model final : public model_base_crtp<height_2_fit_model> {
     (void) function__;  // suppress unused var warning
     
     try {
-      
+      local_scalar_t__ alpha = DUMMY_VAR__;
+      current_statement__ = 1;
+      alpha = in__.template read<local_scalar_t__>();
+      local_scalar_t__ sigma = DUMMY_VAR__;
+      current_statement__ = 2;
+      sigma = in__.template read_constrain_lb<local_scalar_t__, jacobian__>(
+                0, lp__);
+      local_scalar_t__ beta = DUMMY_VAR__;
+      current_statement__ = 3;
+      beta = in__.template read<local_scalar_t__>();
+      std::vector<local_scalar_t__> mu =
+         std::vector<local_scalar_t__>(N, DUMMY_VAR__);
+      current_statement__ = 7;
+      for (int i = 1; i <= N; ++i) {
+        current_statement__ = 5;
+        stan::model::assign(mu,
+          ((beta *
+             stan::model::rvalue(weight, "weight", stan::model::index_uni(i)))
+            + alpha), "assigning variable mu", stan::model::index_uni(i));
+      }
+      {
+        current_statement__ = 12;
+        lp_accum__.add(stan::math::normal_lpdf<propto__>(alpha, 155, 5));
+        current_statement__ = 13;
+        lp_accum__.add(stan::math::gamma_lpdf<propto__>(sigma, 5, 1));
+        current_statement__ = 14;
+        lp_accum__.add(stan::math::lognormal_lpdf<propto__>(beta, 0, 1));
+        current_statement__ = 17;
+        for (int i = 1; i <= N; ++i) {
+          current_statement__ = 15;
+          lp_accum__.add(
+            stan::math::normal_lpdf<propto__>(
+              stan::model::rvalue(heights, "heights",
+                stan::model::index_uni(i)),
+              stan::model::rvalue(mu, "mu", stan::model::index_uni(i)),
+              sigma));
+        }
+      }
     } catch (const std::exception& e) {
       stan::lang::rethrow_located(e, locations_array__[current_statement__]);
     }
@@ -103,14 +204,51 @@ class height_2_fit_model final : public model_base_crtp<height_2_fit_model> {
     (void) function__;  // suppress unused var warning
     
     try {
+      double alpha = std::numeric_limits<double>::quiet_NaN();
+      current_statement__ = 1;
+      alpha = in__.template read<local_scalar_t__>();
+      double sigma = std::numeric_limits<double>::quiet_NaN();
+      current_statement__ = 2;
+      sigma = in__.template read_constrain_lb<local_scalar_t__, jacobian__>(
+                0, lp__);
+      double beta = std::numeric_limits<double>::quiet_NaN();
+      current_statement__ = 3;
+      beta = in__.template read<local_scalar_t__>();
+      std::vector<double> mu =
+         std::vector<double>(N, std::numeric_limits<double>::quiet_NaN());
+      out__.write(alpha);
+      out__.write(sigma);
+      out__.write(beta);
       if (stan::math::logical_negation((stan::math::primitive_value(
             emit_transformed_parameters__) || stan::math::primitive_value(
             emit_generated_quantities__)))) {
         return ;
       } 
+      current_statement__ = 7;
+      for (int i = 1; i <= N; ++i) {
+        current_statement__ = 5;
+        stan::model::assign(mu,
+          ((beta *
+             stan::model::rvalue(weight, "weight", stan::model::index_uni(i)))
+            + alpha), "assigning variable mu", stan::model::index_uni(i));
+      }
+      if (emit_transformed_parameters__) {
+        out__.write(mu);
+      } 
       if (stan::math::logical_negation(emit_generated_quantities__)) {
         return ;
       } 
+      std::vector<double> h =
+         std::vector<double>(N, std::numeric_limits<double>::quiet_NaN());
+      current_statement__ = 11;
+      for (int i = 1; i <= N; ++i) {
+        current_statement__ = 9;
+        stan::model::assign(h,
+          stan::math::normal_rng(
+            stan::model::rvalue(mu, "mu", stan::model::index_uni(i)), sigma,
+            base_rng__), "assigning variable h", stan::model::index_uni(i));
+      }
+      out__.write(h);
     } catch (const std::exception& e) {
       stan::lang::rethrow_located(e, locations_array__[current_statement__]);
     }
@@ -131,6 +269,15 @@ class height_2_fit_model final : public model_base_crtp<height_2_fit_model> {
     try {
       int pos__ = std::numeric_limits<int>::min();
       pos__ = 1;
+      local_scalar_t__ alpha = DUMMY_VAR__;
+      alpha = in__.read<local_scalar_t__>();
+      out__.write(alpha);
+      local_scalar_t__ sigma = DUMMY_VAR__;
+      sigma = in__.read<local_scalar_t__>();
+      out__.write_free_lb(0, sigma);
+      local_scalar_t__ beta = DUMMY_VAR__;
+      beta = in__.read<local_scalar_t__>();
+      out__.write(beta);
     } catch (const std::exception& e) {
       stan::lang::rethrow_located(e, locations_array__[current_statement__]);
     }
@@ -138,13 +285,16 @@ class height_2_fit_model final : public model_base_crtp<height_2_fit_model> {
     
   inline void get_param_names(std::vector<std::string>& names__) const {
     
-    names__ = std::vector<std::string>{};
+    names__ = std::vector<std::string>{"alpha", "sigma", "beta", "mu", "h"};
     
     } // get_param_names() 
     
   inline void get_dims(std::vector<std::vector<size_t>>& dimss__) const {
     
-    dimss__ = std::vector<std::vector<size_t>>{};
+    dimss__ = std::vector<std::vector<size_t>>{std::vector<size_t>{},
+      std::vector<size_t>{}, std::vector<size_t>{},
+      std::vector<size_t>{static_cast<size_t>(N)},
+      std::vector<size_t>{static_cast<size_t>(N)}};
     
     } // get_dims() 
     
@@ -154,13 +304,23 @@ class height_2_fit_model final : public model_base_crtp<height_2_fit_model> {
                                       bool emit_generated_quantities__ = true) const
     final {
     
-    
+    param_names__.emplace_back(std::string() + "alpha");
+    param_names__.emplace_back(std::string() + "sigma");
+    param_names__.emplace_back(std::string() + "beta");
     if (emit_transformed_parameters__) {
-      
+      for (int sym1__ = 1; sym1__ <= N; ++sym1__) {
+        {
+          param_names__.emplace_back(std::string() + "mu" + '.' + std::to_string(sym1__));
+        } 
+      }
     }
     
     if (emit_generated_quantities__) {
-      
+      for (int sym1__ = 1; sym1__ <= N; ++sym1__) {
+        {
+          param_names__.emplace_back(std::string() + "h" + '.' + std::to_string(sym1__));
+        } 
+      }
     }
     
     } // constrained_param_names() 
@@ -171,26 +331,36 @@ class height_2_fit_model final : public model_base_crtp<height_2_fit_model> {
                                         bool emit_generated_quantities__ = true) const
     final {
     
-    
+    param_names__.emplace_back(std::string() + "alpha");
+    param_names__.emplace_back(std::string() + "sigma");
+    param_names__.emplace_back(std::string() + "beta");
     if (emit_transformed_parameters__) {
-      
+      for (int sym1__ = 1; sym1__ <= N; ++sym1__) {
+        {
+          param_names__.emplace_back(std::string() + "mu" + '.' + std::to_string(sym1__));
+        } 
+      }
     }
     
     if (emit_generated_quantities__) {
-      
+      for (int sym1__ = 1; sym1__ <= N; ++sym1__) {
+        {
+          param_names__.emplace_back(std::string() + "h" + '.' + std::to_string(sym1__));
+        } 
+      }
     }
     
     } // unconstrained_param_names() 
     
   inline std::string get_constrained_sizedtypes() const {
     
-    return std::string("[]");
+    return std::string("[{\"name\":\"alpha\",\"type\":{\"name\":\"real\"},\"block\":\"parameters\"},{\"name\":\"sigma\",\"type\":{\"name\":\"real\"},\"block\":\"parameters\"},{\"name\":\"beta\",\"type\":{\"name\":\"real\"},\"block\":\"parameters\"},{\"name\":\"mu\",\"type\":{\"name\":\"array\",\"length\":" + std::to_string(N) + ",\"element_type\":{\"name\":\"real\"}},\"block\":\"transformed_parameters\"},{\"name\":\"h\",\"type\":{\"name\":\"array\",\"length\":" + std::to_string(N) + ",\"element_type\":{\"name\":\"real\"}},\"block\":\"generated_quantities\"}]");
     
     } // get_constrained_sizedtypes() 
     
   inline std::string get_unconstrained_sizedtypes() const {
     
-    return std::string("[]");
+    return std::string("[{\"name\":\"alpha\",\"type\":{\"name\":\"real\"},\"block\":\"parameters\"},{\"name\":\"sigma\",\"type\":{\"name\":\"real\"},\"block\":\"parameters\"},{\"name\":\"beta\",\"type\":{\"name\":\"real\"},\"block\":\"parameters\"},{\"name\":\"mu\",\"type\":{\"name\":\"array\",\"length\":" + std::to_string(N) + ",\"element_type\":{\"name\":\"real\"}},\"block\":\"transformed_parameters\"},{\"name\":\"h\",\"type\":{\"name\":\"array\",\"length\":" + std::to_string(N) + ",\"element_type\":{\"name\":\"real\"}},\"block\":\"generated_quantities\"}]");
     
     } // get_unconstrained_sizedtypes() 
     
@@ -203,9 +373,10 @@ class height_2_fit_model final : public model_base_crtp<height_2_fit_model> {
                             const bool emit_transformed_parameters = true,
                             const bool emit_generated_quantities = true,
                             std::ostream* pstream = nullptr) const {
-      const size_t num_params__ = 0;
-      const size_t num_transformed = 0;
-      const size_t num_gen_quantities = 0;
+      const size_t num_params__ = 
+  ((1 + 1) + 1);
+      const size_t num_transformed = N;
+      const size_t num_gen_quantities = N;
       std::vector<double> vars_vec(num_params__
        + (emit_transformed_parameters * num_transformed)
        + (emit_generated_quantities * num_gen_quantities));
@@ -223,9 +394,10 @@ class height_2_fit_model final : public model_base_crtp<height_2_fit_model> {
                             bool emit_transformed_parameters = true,
                             bool emit_generated_quantities = true,
                             std::ostream* pstream = nullptr) const {
-      const size_t num_params__ = 0;
-      const size_t num_transformed = 0;
-      const size_t num_gen_quantities = 0;
+      const size_t num_params__ = 
+  ((1 + 1) + 1);
+      const size_t num_transformed = N;
+      const size_t num_gen_quantities = N;
       vars.resize(num_params__
         + (emit_transformed_parameters * num_transformed)
         + (emit_generated_quantities * num_gen_quantities));
@@ -261,8 +433,8 @@ class height_2_fit_model final : public model_base_crtp<height_2_fit_model> {
                               std::vector<int>& params_i,
                               std::vector<double>& vars,
                               std::ostream* pstream__ = nullptr) const {
-     constexpr std::array<const char*, 0> names__{};
-      const std::array<Eigen::Index, 0> constrain_param_sizes__{};
+     constexpr std::array<const char*, 3> names__{"alpha", "sigma", "beta"};
+      const std::array<Eigen::Index, 3> constrain_param_sizes__{1, 1, 1};
       const auto num_constrained_params__ = std::accumulate(
         constrain_param_sizes__.begin(), constrain_param_sizes__.end(), 0);
     

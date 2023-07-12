@@ -8,8 +8,19 @@ using namespace stan::math;
 
 
 stan::math::profile_map profiles__;
-static constexpr std::array<const char*, 1> locations_array__ = 
-{" (found before start of program)"};
+static constexpr std::array<const char*, 12> locations_array__ = 
+{" (found before start of program)",
+ " (in '/home/Lab4/height_2b_ppc.stan', line 7, column 3 to column 44)",
+ " (in '/home/Lab4/height_2b_ppc.stan', line 8, column 3 to column 40)",
+ " (in '/home/Lab4/height_2b_ppc.stan', line 9, column 3 to column 35)",
+ " (in '/home/Lab4/height_2b_ppc.stan', line 10, column 3 to column 18)",
+ " (in '/home/Lab4/height_2b_ppc.stan', line 12, column 4 to column 56)",
+ " (in '/home/Lab4/height_2b_ppc.stan', line 11, column 17 to line 13, column 4)",
+ " (in '/home/Lab4/height_2b_ppc.stan', line 11, column 3 to line 13, column 4)",
+ " (in '/home/Lab4/height_2b_ppc.stan', line 2, column 4 to column 19)",
+ " (in '/home/Lab4/height_2b_ppc.stan', line 3, column 16 to column 17)",
+ " (in '/home/Lab4/height_2b_ppc.stan', line 3, column 4 to column 19)",
+ " (in '/home/Lab4/height_2b_ppc.stan', line 10, column 15 to column 16)"};
 
 
 
@@ -17,7 +28,8 @@ static constexpr std::array<const char*, 1> locations_array__ =
 class height_2b_ppc_model final : public model_base_crtp<height_2b_ppc_model> {
 
  private:
-   
+  int N;
+  std::vector<double> weight; 
   
  
  public:
@@ -45,6 +57,29 @@ class height_2b_ppc_model final : public model_base_crtp<height_2b_ppc_model> {
     try {
       int pos__ = std::numeric_limits<int>::min();
       pos__ = 1;
+      current_statement__ = 8;
+      context__.validate_dims("data initialization","N","int",
+           std::vector<size_t>{});
+      N = std::numeric_limits<int>::min();
+      
+      
+      current_statement__ = 8;
+      N = context__.vals_i("N")[(1 - 1)];
+      current_statement__ = 8;
+      stan::math::check_greater_or_equal(function__, "N", N, 0);
+      current_statement__ = 9;
+      stan::math::validate_non_negative_index("weight", "N", N);
+      current_statement__ = 10;
+      context__.validate_dims("data initialization","weight","double",
+           std::vector<size_t>{static_cast<size_t>(N)});
+      weight = 
+        std::vector<double>(N, std::numeric_limits<double>::quiet_NaN());
+      
+      
+      current_statement__ = 10;
+      weight = context__.vals_r("weight");
+      current_statement__ = 11;
+      stan::math::validate_non_negative_index("height", "N", N);
     } catch (const std::exception& e) {
       stan::lang::rethrow_located(e, locations_array__[current_statement__]);
     }
@@ -111,6 +146,35 @@ class height_2b_ppc_model final : public model_base_crtp<height_2b_ppc_model> {
       if (stan::math::logical_negation(emit_generated_quantities__)) {
         return ;
       } 
+      double alpha = std::numeric_limits<double>::quiet_NaN();
+      current_statement__ = 1;
+      alpha = stan::math::normal_rng(155, 5, base_rng__);
+      double sigma = std::numeric_limits<double>::quiet_NaN();
+      current_statement__ = 2;
+      sigma = stan::math::gamma_rng(5, 1, base_rng__);
+      double beta = std::numeric_limits<double>::quiet_NaN();
+      current_statement__ = 3;
+      beta = stan::math::lognormal_rng(0, 1, base_rng__);
+      std::vector<double> height =
+         std::vector<double>(N, std::numeric_limits<double>::quiet_NaN());
+      current_statement__ = 7;
+      for (int i = 1; i <= N; ++i) {
+        current_statement__ = 5;
+        stan::model::assign(height,
+          stan::math::normal_rng(
+            ((stan::model::rvalue(weight, "weight",
+                stan::model::index_uni(i)) * beta) + alpha), sigma,
+            base_rng__),
+          "assigning variable height", stan::model::index_uni(i));
+      }
+      current_statement__ = 1;
+      stan::math::check_greater_or_equal(function__, "alpha", alpha, 0);
+      current_statement__ = 2;
+      stan::math::check_greater_or_equal(function__, "sigma", sigma, 0);
+      out__.write(alpha);
+      out__.write(sigma);
+      out__.write(beta);
+      out__.write(height);
     } catch (const std::exception& e) {
       stan::lang::rethrow_located(e, locations_array__[current_statement__]);
     }
@@ -138,13 +202,15 @@ class height_2b_ppc_model final : public model_base_crtp<height_2b_ppc_model> {
     
   inline void get_param_names(std::vector<std::string>& names__) const {
     
-    names__ = std::vector<std::string>{};
+    names__ = std::vector<std::string>{"alpha", "sigma", "beta", "height"};
     
     } // get_param_names() 
     
   inline void get_dims(std::vector<std::vector<size_t>>& dimss__) const {
     
-    dimss__ = std::vector<std::vector<size_t>>{};
+    dimss__ = std::vector<std::vector<size_t>>{std::vector<size_t>{},
+      std::vector<size_t>{}, std::vector<size_t>{},
+      std::vector<size_t>{static_cast<size_t>(N)}};
     
     } // get_dims() 
     
@@ -160,7 +226,14 @@ class height_2b_ppc_model final : public model_base_crtp<height_2b_ppc_model> {
     }
     
     if (emit_generated_quantities__) {
-      
+      param_names__.emplace_back(std::string() + "alpha");
+      param_names__.emplace_back(std::string() + "sigma");
+      param_names__.emplace_back(std::string() + "beta");
+      for (int sym1__ = 1; sym1__ <= N; ++sym1__) {
+        {
+          param_names__.emplace_back(std::string() + "height" + '.' + std::to_string(sym1__));
+        } 
+      }
     }
     
     } // constrained_param_names() 
@@ -177,20 +250,27 @@ class height_2b_ppc_model final : public model_base_crtp<height_2b_ppc_model> {
     }
     
     if (emit_generated_quantities__) {
-      
+      param_names__.emplace_back(std::string() + "alpha");
+      param_names__.emplace_back(std::string() + "sigma");
+      param_names__.emplace_back(std::string() + "beta");
+      for (int sym1__ = 1; sym1__ <= N; ++sym1__) {
+        {
+          param_names__.emplace_back(std::string() + "height" + '.' + std::to_string(sym1__));
+        } 
+      }
     }
     
     } // unconstrained_param_names() 
     
   inline std::string get_constrained_sizedtypes() const {
     
-    return std::string("[]");
+    return std::string("[{\"name\":\"alpha\",\"type\":{\"name\":\"real\"},\"block\":\"generated_quantities\"},{\"name\":\"sigma\",\"type\":{\"name\":\"real\"},\"block\":\"generated_quantities\"},{\"name\":\"beta\",\"type\":{\"name\":\"real\"},\"block\":\"generated_quantities\"},{\"name\":\"height\",\"type\":{\"name\":\"array\",\"length\":" + std::to_string(N) + ",\"element_type\":{\"name\":\"real\"}},\"block\":\"generated_quantities\"}]");
     
     } // get_constrained_sizedtypes() 
     
   inline std::string get_unconstrained_sizedtypes() const {
     
-    return std::string("[]");
+    return std::string("[{\"name\":\"alpha\",\"type\":{\"name\":\"real\"},\"block\":\"generated_quantities\"},{\"name\":\"sigma\",\"type\":{\"name\":\"real\"},\"block\":\"generated_quantities\"},{\"name\":\"beta\",\"type\":{\"name\":\"real\"},\"block\":\"generated_quantities\"},{\"name\":\"height\",\"type\":{\"name\":\"array\",\"length\":" + std::to_string(N) + ",\"element_type\":{\"name\":\"real\"}},\"block\":\"generated_quantities\"}]");
     
     } // get_unconstrained_sizedtypes() 
     
@@ -205,7 +285,8 @@ class height_2b_ppc_model final : public model_base_crtp<height_2b_ppc_model> {
                             std::ostream* pstream = nullptr) const {
       const size_t num_params__ = 0;
       const size_t num_transformed = 0;
-      const size_t num_gen_quantities = 0;
+      const size_t num_gen_quantities = 
+  (((1 + 1) + 1) + N);
       std::vector<double> vars_vec(num_params__
        + (emit_transformed_parameters * num_transformed)
        + (emit_generated_quantities * num_gen_quantities));
@@ -225,7 +306,8 @@ class height_2b_ppc_model final : public model_base_crtp<height_2b_ppc_model> {
                             std::ostream* pstream = nullptr) const {
       const size_t num_params__ = 0;
       const size_t num_transformed = 0;
-      const size_t num_gen_quantities = 0;
+      const size_t num_gen_quantities = 
+  (((1 + 1) + 1) + N);
       vars.resize(num_params__
         + (emit_transformed_parameters * num_transformed)
         + (emit_generated_quantities * num_gen_quantities));

@@ -9,8 +9,8 @@ parameters {
 }
 
 model {
-  mi ~ normal(160, 10);
-  sigma ~ gamma(2, 30);
+  mi ~ normal(155, 5);
+  sigma ~ gamma(5, 1);
   
   heights ~ normal(mi, sigma);
 }
